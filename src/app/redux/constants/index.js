@@ -1,0 +1,4 @@
+export const SET_USER = "SET_USER"
+export const REQUEST_SET_USER = "SET_USER"
+export const TODOS_FAILURE = "TODOS_FAILURE"
+export const REQUEST_FETCH_USER = "REQUEST_FETCH_USER"
