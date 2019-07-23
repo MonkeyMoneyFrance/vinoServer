@@ -10,6 +10,7 @@ import {Switch,Route} from 'react-router-dom'
 function App() {
   return (
     <div className="App">
+      <div>OK HERE S A THING</div>
       <Switch>
         {routes.map((r,index) => 
           (
