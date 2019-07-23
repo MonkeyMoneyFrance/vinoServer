@@ -72,7 +72,7 @@ app.use(passport.session());
 if (process.env.NODE_ENV !== 'production') {
   app.use(cors({origin: 'http://localhost:8080', credentials: true }));
 } else {
-  app.use(express.static(path.resolve(__dirname,`../..dist`)))
+  app.use(express.static(path.resolve(__dirname,`../../dist`)))
   app.get('/*',(req,res) => {
     res.sendFile(path.resolve('index.html'))
   })
