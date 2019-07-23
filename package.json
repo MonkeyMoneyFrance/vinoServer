@@ -45,7 +45,7 @@
   "scripts": {
     "start": "npm run server",
     "dev": "webpack-dev-server --open",
-    "build": "react-scripts build",
+    "build": "webpack --production",
     "server": "cross-env NODE_ENV=production babel-node src/server/index.js",
     "server-dev": "nodemon src/server --exec babel-node src/server",
     "start-dev": "concurrently \"npm run server-dev\" \"npm run dev\"",
