@@ -16,7 +16,7 @@ const uuid = require('uuid/v4')
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-const port = process.env.NODE_ENV || '3000'
+const port = process.env.PORT || '3000'
 mongoose.connect('mongodb+srv://mymac:weiH8ahb@cluster0-4wcde.mongodb.net/test', {useNewUrlParser: true,useFindAndModify:false}).then(()=>{
   console.log('connected')
 }).catch((e)=>console.log(e));
@@ -108,4 +108,4 @@ app.get('/', (req, res) => {
   res.send({})
 })
 ///////////////////////////
-server.listen(port,()=>console.log("...listening HTTP on port 3000"));
+server.listen(port,()=>console.log("...listening HTTP on port " + port));
