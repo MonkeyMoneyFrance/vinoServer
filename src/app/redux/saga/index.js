@@ -1,7 +1,7 @@
 import { call, put, takeLatest, takeEvery,take } from 'redux-saga/effects'
 import { setUser,sessionFailure} from '../actions'
 import { REQUEST_FETCH_USER} from '../constants'
-const URL = process.env.NODE_ENV == 'production' ? '' : "http://localhost:3000/"
+const URL = (process.env.NODE_ENV == 'production') ? '' : "http://localhost:3000/"
 
 //
 // function* getAllTodos () {
@@ -26,12 +26,11 @@ function* requestSetUser (action) {
     })
   }
 
-  const res = yield call(fetch, URL + 'login', options)
+  const res = yield call(fetch, 'login', options)
   const user = yield res.json()
-  console.log(user)
+
   yield put(setUser(user))
   } catch (e) {
-    console.log(e)
     yield put(sessionFailure({authenticated:'UNAUTHENTICATED'}))
   }
 }
