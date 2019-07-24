@@ -2,7 +2,7 @@ module.exports = {
   apps : [
       {
         name: "Vino",
-        script: "./app.js",
+        script: "./index.js",
         watch: true,
         env: {
             "PORT": 8080,//you can choose
