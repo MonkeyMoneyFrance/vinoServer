@@ -43,7 +43,7 @@
     "webpack-dev-server": "^3.1.7"
   },
   "scripts": {
-    "start": "npm run server",
+    "start": "NODE_ENV=production npm run server",
     "dev": "webpack-dev-server --open",
     "build": "webpack --production",
     "server": "cross-env NODE_ENV=production babel-node src/server/index.js",
