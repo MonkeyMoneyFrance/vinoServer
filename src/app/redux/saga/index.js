@@ -15,7 +15,6 @@ const URL = (process.env.NODE_ENV == 'production') ? '' : "http://localhost:3000
 // }
 
 function* requestSetUser (action) {
-  console.log(process.env.NODE_ENV)
   try {
   const options = {
     credentials: 'include',
@@ -26,7 +25,7 @@ function* requestSetUser (action) {
     })
   }
 
-  const res = yield call(fetch, 'login', options)
+  const res = yield call(fetch, URL + 'login', options)
   const user = yield res.json()
 
   yield put(setUser(user))
