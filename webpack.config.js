@@ -1,5 +1,7 @@
 const path = require('path');
-
+const webpack = require('webpack')
+const CompressionPlugin = require('compression-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 module.exports = {
   entry : path.resolve(__dirname,'src','app'),
   output : {
@@ -18,5 +20,20 @@ module.exports = {
       test : /\.jsx?/,
       loader : 'babel-loader'
     }]
-  }
+  },
+  optimization: {
+      minimizer: [
+        new TerserPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap: true, // Must be set to true if using source-maps in production
+          terserOptions: {
+            // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+          }
+        }),
+      ],
+    },
+  plugins: [
+    new CompressionPlugin({cache: true,})
+  ],
 }

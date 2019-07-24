@@ -11,8 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.5",
+    "bcrypt-nodejs": "^0.0.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+    "connect-redis": "^3.4.2",
+    "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "fcm-node": "^1.5.1",
     "jsonwebtoken": "^8.5.1",
@@ -25,6 +28,7 @@
     "passport": "^0.4.0",
     "passport-facebook": "^3.0.0",
     "passport-facebook-token": "^3.3.0",
+    "passport-local": "^1.0.0",
     "redis": "^2.8.0",
     "socket.io": "^2.2.0"
   }
