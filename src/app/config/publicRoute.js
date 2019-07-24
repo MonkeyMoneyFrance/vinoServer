@@ -2,13 +2,13 @@ import React, {Component} from 'react'
 import {Route} from 'react-router-dom'
 import PublicLayout from '../components/layout/publicLayout'
 
-export default function withLayout(Component) {
+export default function withLayout(PublicComponent) {
   return class extends Component {
     render() {
       return (
         <React.Fragment>
           <PublicLayout>
-            <Component {...this.props} />
+            <PublicComponent {...this.props} />
           </PublicLayout>
         </React.Fragment>
         // <Route {...rest} render={(props) => (

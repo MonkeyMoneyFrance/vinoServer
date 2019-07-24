@@ -1,5 +1,6 @@
 import React from 'react';
 import {login} from './utils/API'
+import Home from './pages/home'
 import routes from './config/routes'
 import withAuth from './config/privateroute'
 import withLayout from './config/publicRoute'
@@ -9,8 +10,7 @@ import {Switch,Route} from 'react-router-dom'
 
 function App() {
   return (
-    <div className="App">
-      <div>OK HERE S A THING</div>
+    <div style={{margin:0}}>
       <Switch>
         {routes.map((r,index) => 
           (
