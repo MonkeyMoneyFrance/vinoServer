@@ -15,7 +15,7 @@ const URL = (process.env.NODE_ENV == 'production') ? '' : "http://localhost:3000
 // }
 
 function* requestSetUser (action) {
-
+  console.log(process.env.NODE_ENV)
   try {
   const options = {
     credentials: 'include',
