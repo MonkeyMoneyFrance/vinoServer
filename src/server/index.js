@@ -2,16 +2,18 @@ const express=require('express');
 const {user,auth,cellar,wine}=require('./core');
 const bodyParser = require('body-parser')
 const passport = require('passport')
-const FacebookStrategy = require('passport-facebook').Strategy;
-var FacebookTokenStrategy = require('passport-facebook-token');
-var GoogleStrategy = require('passport-google-token').Strategy;
+const FacebookTokenStrategy = require('passport-facebook-token');
+const GoogleStrategy = require('passport-google-token').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+
 const { facebook, google } = require('./configAuth');
 const streams = require('./streams')
 const session = require('express-session');
 const redisStore = require('connect-redis')(session);
 const uuid = require('uuid/v4')
-const {getClient,fetchQrCode,setQrCode,setDeviceToken,getDeviceToken,setSocketClient,removeSocketClient} = require('./routes/redismethods.js')
+const {getClient,getResetPasswordToken,createResetPasswordToken,fetchQrCode,setQrCode,setDeviceToken,getDeviceToken,setSocketClient,removeSocketClient} = require('./routes/redismethods.js')
 const {verifyToken,signRequestToken,isAllowed,setMiddleWareClient,isAdmin} = require('./routes/middlewares.js');
+const {sendResetPasswordMail} = require('./routes/mailMethods.js');
 const {verifySocketToken} = require('./routes/socketmiddlewares.js');
 const mongoose = require('mongoose')
 const path = require('path')
@@ -40,7 +42,6 @@ app.use(session({
   store: new redisStore({ host: 'localhost', port: 6379, client: getClient(),ttl :  260}),
   secret: 'keyboard cat',
   resave: true,
-
   saveUninitialized: true
 }))
 
@@ -53,7 +54,10 @@ if (process.env.NODE_ENV !== 'production') {
     res.sendFile(path.resolve('index.html'))
   })
 }
-
+passport.use(new LocalStrategy(
+  { usernameField: 'email' },
+  auth.localAuth
+));
 passport.use(new GoogleStrategy({
     clientID: "492975335644-4okinlf94v3gfgjt4fjnbf8hlv5pt2uo.apps.googleusercontent.com",
     clientSecret: "7EvA0M2LEQ77_3P4_LMSf2Xz",
@@ -80,6 +84,7 @@ app.use(passport.session());
 
 
 
+
 app.get('/api/authConnected',(req,res) => {
   if (req.isAuthenticated()){
     const token = signRequestToken({userId:req.user})
@@ -103,17 +108,70 @@ app.get('/api/auth/google/token',
     if (req.user) res.status(200).send({userId : req.user});
     else res.status(401).send({'message':"Wrong Token"});
 });
+app.get('/api/auth/email/token', (req, res, next) => {
+
+  passport.authenticate("local" , (err, user, info) => {
+
+    if(info) {return res.status(401).send(info)}
+    if (err) {return res.status(500).send(err)}
+    if (user) res.status(200).send({userId : user});
+
+  })(req, res, next);
+});
+
 
 
 // all which is below this points need to pass token validation !
 // app.use(function(req,res,next) {
 //   verifyToken(req,res,next)
 // }) // => must have a valid token !
+app.post('/api/askForReset',function(req,res){
+  //body : email
+  let email = req.body.email;
+  auth.findEmail(email).then((userId)=>{                   //check mais / user exists
+    if (!userId){
+      res.status(404).send()
+    }           //user doesn't exist
+    else{
+      createResetPasswordToken(userId).then(passwordToken=>{   //create token in redis, available 15 minutes
+        sendResetPasswordMail(req.hostname,email,userId,passwordToken).then(()=>{                  //send the RESET mail, in which the token
+          res.status(200).send({
+            message:"resetPasswordToken sent by mail"
+          });
+        })
+        .catch(e=>{
+          res.status(500).send();   // couldn't send mail
+        })
+      })
+      .catch(e=>{
+        res.status(500).send();     // couldn't create token
+      })
+    }//end "userId retrieved for email"
+  })
+  .catch(e=>{
+    res.status(404).send()      // user not found
+  })
+})
 
+
+app.post('/api/newPassword',function(req,res){
+  const {password1,userId,token} = req.body;
+  getResetPasswordToken(userId).then((retrievedToken)=>{
+    if (retrievedToken != token) {
+      return res.send('La requête a expiré. Veuillez recommencer la réinitialisation de mot de passe')
+    }
+    auth.resetPass(userId,password1).then(()=>{
+      res.send("Votre mot de passe a bien été modifié. Vous pouvez fermer cette fenêtre.")
+    }).catch((error)=>{
+      res.send(error)
+    })
+  }).catch((error)=>{
+    res.send(error)
+  })
+})
 
 // JUST NEED A VALID TOKEN HERE
 app.use(function(req,res,next) {
-  console.log(req.isAuthenticated())
   isAllowed(req,res,next)
 }) // => must be either owner of info, or carer
 app.get('/api/logout', function (req, res){
