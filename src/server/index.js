@@ -14,6 +14,7 @@ const {getClient,fetchQrCode,setQrCode,setDeviceToken,getDeviceToken,setSocketCl
 const {verifyToken,signRequestToken,isAllowed,setMiddleWareClient,isAdmin} = require('./routes/middlewares.js');
 const {verifySocketToken} = require('./routes/socketmiddlewares.js');
 const mongoose = require('mongoose')
+const path = require('path')
 const ObjectId = mongoose.Types.ObjectId;
 const moment = require('moment')
 const cors = require("cors")
