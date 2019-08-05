@@ -4,7 +4,7 @@ import AdminHeader from "../header/adminHeader";
 const AdminLayout = ({ children, ...rest }) => {
     return (
       <div>
-        <PrivateHeader />
+        <AdminHeader />
         {children}
         {/* <Footer /> */}
       </div>

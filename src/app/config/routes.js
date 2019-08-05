@@ -2,38 +2,71 @@ export default  [
   {
     path : '/',
     main: require('../pages/home').default,
-    private : false,
     exact:true
   },
   {
-    path : '/login',
-    main : require('../pages/login').default,
-    private : false,
+    path : '/resetPass',
+    main : require('../pages/resetPass').default,
     exact:true
   },
   {
-    path : '/myspace',
-    main : require('../pages/signup').default,
-    private : true,
+    path : '/confirmMail',
+    main : require('../pages/confirmMail').default,
     exact:true
   },
-  {
-    path : '/bo/matchs/:sport',
-    main: require('../pages/signup').default,
-    admin : true,
-    exact:true
-  },
-  {
-    path : '/bo/teams/:sport',
-    main: require('../pages/signup').default,
-    admin : true,
-    exact:true
-  },
-  {
-    path : '/bo/users/:sport/:team?',
-    main: require('../pages/signup').default,
-    admin : true,
-    exact:true
-  }
+  // {
+  //   path : '/game/:gameId',
+  //   main: require('../pages/game').default,
+  //   private : true,
+  //   exact:true
+  // },
+  // {
+  //   path : '/team',
+  //   main: require('../pages/team').default,
+  //   private : true,
+  //   exact:true
+  // },
+  // {
+  //   path : '/profile',
+  //   main: require('../pages/profile').default,
+  //   private : true,
+  //   exact:true
+  // },
+  //
+  // {
+  //   path : '/bo/user',
+  //   main: require('../pages/user').default,
+  //   admin : true,
+  // },
+  // {
+  //   path : '/bo/games',
+  //   main: require('../pages/games').default,
+  //   admin : true,
+  // },
+  // {
+  //   path : '/bo/game/:gameId',
+  //   main: require('../pages/game').default,
+  //   admin : true,
+  // },
+  // {
+  //   path : '/bo/teams',
+  //   main: require('../pages/teams').default,
+  //   admin : true,
+  // },
+  // {
+  //   path : '/bo/teams/:teamId',
+  //   main: require('../pages/team').default,
+  //   admin : true,
+  // },
+  // {
+  //   path : '/bo/users/',
+  //   main: require('../pages/users').default,
+  //   admin : true,
+  // },
+  // {
+  //   path : '/bo/users/:userId',
+  //   main: require('../pages/user').default,
+  //   admin : true,
+  // }
 
 ]

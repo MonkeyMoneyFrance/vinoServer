@@ -1,4 +1,5 @@
-import React from 'react';
+import React , {useEffect} from 'react';
+import { withRouter } from 'react-router-dom'
 import {login} from './utils/API'
 import Home from './pages/home'
 import routes from './config/routes'
@@ -6,11 +7,24 @@ import withAuth from './config/privateroute'
 import withLayout from './config/publicRoute'
 import withAdmin from './config/adminRoute'
 import {Switch,Route} from 'react-router-dom'
+import {requestSetUser} from './redux/actions'
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
 
+const URL = process.env.NODE_ENV == 'production' ? '' : "http://localhost:3000/"
+function mapStateToProps(state){
+  return {}
+}
+function matchDispatchToProps(dispatch){
+  return bindActionCreators({requestSetUser}, dispatch)
+}
+function App(props) {
+  useEffect(()=>{
+    props.requestSetUser()
+  },[])
 
-function App() {
   return (
-    <div style={{margin:0}}>
+    <div >
       <Switch>
         {routes.map((r,index) => 
           (
@@ -18,8 +32,8 @@ function App() {
               path={r.path}
               exact={r.exact}
               key = {index}
-              match = {r.match}
-              component={r.private ? withAuth(r.main) : r.admin ? withAdmin(r.main)  : withLayout(r.main)} />
+              component={r.private ? withAuth(r.main) : r.admin ? withAdmin(r.main)  : withLayout(r.main)}
+            />
           )
 
        )}
@@ -28,4 +42,4 @@ function App() {
   );
 }
 
-export default App;
+export default withRouter(connect(mapStateToProps,matchDispatchToProps)(App));

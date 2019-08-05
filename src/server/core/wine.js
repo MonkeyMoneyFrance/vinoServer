@@ -61,11 +61,13 @@ module.exports = {
   },
   set : (req,wine,wineId=new ObjectId()) => {
     return new Promise((resolve,reject) => {
+      console.log(req.cellars)
       Wine.findOne({'$and' : [
         {cellarId : {'$in' : req.cellars}},
         {_id:wineId}
       ]}).then(async (doc)=>{
         if (!doc) {
+          console.log(wine)
           Wine.create(wine).then((results)=>{
             resolve(results)
           }).catch((err)=>{

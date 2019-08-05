@@ -5,7 +5,7 @@ import store from '../redux/store'
 const URL = process.env.NODE_ENV == 'production' ? '' : "http://localhost:3000/"
 
 
-export default function withAuth(ComponentToProtect) {
+export default function withAdmin(ComponentToProtect) {
   return class extends Component {
     constructor() {
       super();
@@ -31,6 +31,7 @@ export default function withAuth(ComponentToProtect) {
     }
     render() {
       const { loading, redirect } = this.state;
+        console.log(loading,redirect)
       if (loading) {
         return null;
       }
@@ -39,9 +40,9 @@ export default function withAuth(ComponentToProtect) {
       }
       return (
         <React.Fragment>
-          <PrivateLayout>
+          <AdminLayout>
             <ComponentToProtect {...this.props} />
-          </PrivateLayout>
+          </AdminLayout>
         </React.Fragment>
       );
     }

@@ -85,5 +85,6 @@ module.exports = {
         else resolve(reply)
       })
     })
-  }
+  },
+  getClient : () => client
 }

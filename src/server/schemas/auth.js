@@ -16,5 +16,12 @@ module.exports = new Schema({
                     token: String
               },
               select: false
+        },
+        googleProvider: {
+              type: {
+                    id: String,
+                    token: String
+              },
+              select: false
         }
   },{timestamps:true})

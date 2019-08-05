@@ -16,17 +16,7 @@ import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import { Link as LinkRouter } from 'react-router-dom';
 import {connect} from 'react-redux'
-function MadeWithLove() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Built with love by the '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Material-UI
-      </Link>
-      {' team.'}
-    </Typography>
-  );
-}
+
 const useStyles = makeStyles(theme => ({
   '@global': {
     body: {
@@ -76,87 +66,41 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const tiers = [
-  {
-    title: 'Free',
-    price: '0',
-    description: ['10 users included', '2 GB of storage', 'Help center access', 'Email support'],
-    buttonText: 'Sign up for free',
-    buttonVariant: 'outlined',
-  },
-  {
-    title: 'Pro',
-    subheader: 'Most popular',
-    price: '15',
-    description: [
-      '20 users included',
-      '10 GB of storage',
-      'Help center access',
-      'Priority email support',
-    ],
-    buttonText: 'Get started',
-    buttonVariant: 'contained',
-  },
-  {
-    title: 'Enterprise',
-    price: '30',
-    description: [
-      '50 users included',
-      '30 GB of storage',
-      'Help center access',
-      'Phone & email support',
-    ],
-    buttonText: 'Contact us',
-    buttonVariant: 'outlined',
-  },
-];
-const footers = [
-  {
-    title: 'Company',
-    description: ['Team', 'History', 'Contact us', 'Locations'],
-  },
-  {
-    title: 'Features',
-    description: ['Cool stuff', 'Random feature', 'Team feature', 'Developer stuff', 'Another one'],
-  },
-  {
-    title: 'Resources',
-    description: ['Resource', 'Resource name', 'Another resource', 'Final resource'],
-  },
-  {
-    title: 'Legal',
-    description: ['Privacy policy', 'Terms of use'],
-  },
-];
 function mapStateToProps(state){
-  return {}
+  return {
+    user : state.user
+  }
 }
-function PublicHeader() {
+function PublicHeader(props) {
     const classes = useStyles();
         return (
           <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
             <Toolbar className={classes.toolbar}>
               <Typography variant="h6" color="inherit" noWrap className={classes.toolbarTitle}>
-                Company name
+                <LinkRouter to='/'>Vinologie</LinkRouter>
               </Typography>
               <nav>
-                <LinkRouter to='/' >
+              {props.user.user && (
+                <LinkRouter to='/games' className={classes.link}>My Space</LinkRouter>
+              )}
+                {/*
                 <Link variant="button" color="textPrimary"  className={classes.link}>
-                  Features
+                  <LinkRouter to='/' >Home</LinkRouter>
                 </Link>
-                </LinkRouter>
-                <LinkRouter to='/login' >
-                <Link variant="button" color="textPrimary" href="login" className={classes.link}>
-                  Enterprise
+
+
+                <Link variant="button" color="textPrimary" className={classes.link}>
+                  <LinkRouter to='/login' >Enterprise</LinkRouter>
                 </Link>
-                </LinkRouter>
                 <Link variant="button" color="textPrimary" href="#" className={classes.link}>
                   Support
-                </Link>
+                </Link> */}
               </nav>
-              <Button href="#" color="primary" variant="outlined" className={classes.link}>
-                Login
-              </Button>
+
+                {/* <Button color="primary" variant="outlined" className={classes.link}>
+                  <LinkRouter to='/login'>Connexion  </LinkRouter>
+                </Button> */}
+
             </Toolbar>
             </AppBar>
 

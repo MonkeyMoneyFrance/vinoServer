@@ -9,6 +9,10 @@ export default function user(state = initialState, action){
     case REQUEST_FETCH_USER:
     return {...state,authenticated:'AUTHENTICATING'}
       break;
+    case REQUEST_SET_USER:
+    console.log('requestsetUser')
+    return {...state,coucou:'TOT'}
+      break;
     case SET_USER:
     return {...state,...action.payload}
       break;
