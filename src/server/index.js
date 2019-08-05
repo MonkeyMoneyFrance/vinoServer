@@ -29,14 +29,7 @@ streams.setIo(io)
 mongoose.connect('mongodb+srv://mymac:weiH8ahb@cluster0-4wcde.mongodb.net/test', {useNewUrlParser: true,useFindAndModify:false}).then(()=>{
   console.log('connected')
 }).catch((e)=>console.log(e));
-if (process.env.NODE_ENV !== 'production') {
-  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
-} else {
-  app.use(express.static(path.resolve(__dirname,`../../dist`)))
-  app.get('/*',(req,res) => {
-    res.sendFile(path.resolve('index.html'))
-  })
-}
+
 
 app.use(bodyParser.urlencoded({limit: '2mb', extended: true}))
 app.use(bodyParser.json({limit: '2mb', extended: true}))
@@ -50,6 +43,15 @@ app.use(session({
 
   saveUninitialized: true
 }))
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
+} else {
+  app.use(express.static(path.resolve(__dirname,`../../dist`)))
+  app.get('/*',(req,res) => {
+    res.sendFile(path.resolve('index.html'))
+  })
+}
 
 passport.use(new GoogleStrategy({
     clientID: "492975335644-4okinlf94v3gfgjt4fjnbf8hlv5pt2uo.apps.googleusercontent.com",
