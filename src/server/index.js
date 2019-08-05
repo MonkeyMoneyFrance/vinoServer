@@ -50,6 +50,7 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   app.use(express.static(path.resolve(__dirname,`../../dist`)))
   app.get(/^(?!\/foo\/)/,(req,res) => {
+    console.log('HERE WE SEND')
     res.sendFile(path.resolve('index.html'))
   })
 }
