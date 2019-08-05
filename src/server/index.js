@@ -29,14 +29,14 @@ streams.setIo(io)
 mongoose.connect('mongodb+srv://mymac:weiH8ahb@cluster0-4wcde.mongodb.net/test', {useNewUrlParser: true,useFindAndModify:false}).then(()=>{
   console.log('connected')
 }).catch((e)=>console.log(e));
-// if (process.env.NODE_ENV !== 'production') {
-//   app.use(cors({origin: 'http://localhost:8081', credentials: true }));
-// } else {
-//   app.use(express.static(path.resolve(__dirname,`../../dist`)))
-//   app.get('/*',(req,res) => {
-//     res.sendFile(path.resolve('index.html'))
-//   })
-// }
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
+} else {
+  app.use(express.static(path.resolve(__dirname,`../../dist`)))
+  app.get('/*',(req,res) => {
+    res.sendFile(path.resolve('index.html'))
+  })
+}
 
 app.use(bodyParser.urlencoded({limit: '2mb', extended: true}))
 app.use(bodyParser.json({limit: '2mb', extended: true}))
@@ -75,7 +75,7 @@ passport.deserializeUser((user, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/authConnected',(req,res) => {
+app.get('/api/authConnected',(req,res) => {
   if (req.isAuthenticated()){
     const token = signRequestToken({userId:req.user})
     res.status(200).send({token})
@@ -85,14 +85,14 @@ app.get('/authConnected',(req,res) => {
 
 })
 
-app.get('/auth/facebook/token',
+app.get('/api/auth/facebook/token',
   passport.authenticate('facebook-token'),
   function (req, res) {
     if (req.user) res.status(200).send({userId : req.user});
     else res.status(401).send({'message':"Wrong Token"});
 });
 // , { scope: ["profile", "email"] })
-app.get('/auth/google/token',
+app.get('/api/auth/google/token',
   passport.authenticate("google-token"),
   function (req, res) {
     if (req.user) res.status(200).send({userId : req.user});
@@ -111,13 +111,13 @@ app.use(function(req,res,next) {
   console.log(req.isAuthenticated())
   isAllowed(req,res,next)
 }) // => must be either owner of info, or carer
-app.get('/logout', function (req, res){
+app.get('/api/logout', function (req, res){
   req.logOut()  // <-- not req.logout();
   console.log('will send statuts logouted')
   res.status(200).send({message:'successfully logged out'})
 });
 // add one new aidant (need a valid token adn scanning fetchQRCODE)
-app.post('/cellars/:cellarId?' , (req,res) => {
+app.post('/api/cellars/:cellarId?' , (req,res) => {
   cellar.set(req,req.body,req.params.cellarId)
   .then((response)=>{
     res.status(200).send(response)
@@ -130,7 +130,7 @@ app.post('/cellars/:cellarId?' , (req,res) => {
 })
 
 // FETCH ALL DEALING WITH TRAITEMENT
-app.post('/deviceToken',(req,res) =>{
+app.post('/api/deviceToken',(req,res) =>{
   getDeviceToken(req.decoded.userId).then(tokens => {
     if (tokens.indexOf(req.body.token) > -1) {
       res.status(200).send({"message":"already there"})
@@ -145,7 +145,7 @@ app.post('/deviceToken',(req,res) =>{
 })
 
 
-app.get('/textSearch', (req,res) => {
+app.get('/api/textSearch', (req,res) => {
   wine.textSearch(req,req.query.search)
   .then((response)=>{
     res.status(200).send(response)
@@ -156,7 +156,7 @@ app.get('/textSearch', (req,res) => {
   })
 })
 
-app.get('/wines/:wineId?', (req,res) => {
+app.get('/api/wines/:wineId?', (req,res) => {
 
   wine.get(req,req.params.wineId)
   .then((response)=>{
@@ -168,13 +168,13 @@ app.get('/wines/:wineId?', (req,res) => {
   })
 })
 // delete specific medication (admin only)
-app.delete('/wines/' , (req,res) => {
+app.delete('/api/wines/' , (req,res) => {
   wine.delete(req,req.body.wines || [])
   .then((response)=>res.status(200).send(response))
   .catch((err)=>{
     res.status(500).send("There was a problem adding the wine , code : " + err)})
 })
-app.put('/wines/' , (req,res) => {
+app.put('/api/wines/' , (req,res) => {
   wine.move(req,req.body.wines || [])
   .then((response)=>res.status(200).send(response))
   .catch((err)=>{
@@ -182,7 +182,7 @@ app.put('/wines/' , (req,res) => {
 })
 
 // create medication (admin only)
-app.post('/wines/:wineId?', (req,res) => {
+app.post('/api/wines/:wineId?', (req,res) => {
   console.log(req.body)
   wine.set(req,req.body,req.params.wineId)
   .then((response)=>{
@@ -202,7 +202,7 @@ app.post('/wines/:wineId?', (req,res) => {
 }) // create new traitements for user => admin only
 
 // app.post('users') add new user with id userId => admin
-app.post('/user/:userId?', (req,res) => { // update user => admin/user/carer
+app.post('/api/user/:userId?', (req,res) => { // update user => admin/user/carer
   //&& !req.decoded.admin
   const userId = req.params.userId || req.decoded.userId  // if no params.userId => use token userId
   console.log(209,userId)
@@ -227,7 +227,7 @@ app.post('/user/:userId?', (req,res) => { // update user => admin/user/carer
   })
 })
 
-app.get('/user/:userId?', (req,res) => { //get user infos => admin/user/carer
+app.get('/api/user/:userId?', (req,res) => { //get user infos => admin/user/carer
   //req.decoded.userId is supposed to exist here
   console.log(req.decoded)
   const userId = req.decoded.userId  // if no params.userId => use token userId
@@ -240,7 +240,7 @@ app.get('/user/:userId?', (req,res) => { //get user infos => admin/user/carer
 })
 
 // app.delete('users/:userId') delete user => admin
-app.get('/cellars/:cellarId?' , (req,res) => { // get infos of all my patients / one particular patient
+app.get('/api/cellars/:cellarId?' , (req,res) => { // get infos of all my patients / one particular patient
   cellar.get(req,req.params.cellarId)
   .then((response)=>{
     res.status(200).send(response)
@@ -249,7 +249,7 @@ app.get('/cellars/:cellarId?' , (req,res) => { // get infos of all my patients /
     res.status(500).send("There was a problem registering the user , code : " + err)})
 })
 
-app.delete('/cellars/', (req,res) => { // delete a pairing
+app.delete('/api/cellars/', (req,res) => { // delete a pairing
 
   cellar.delete(req,req.body.cellars || [])
   .then((response)=>{
@@ -263,7 +263,7 @@ app.delete('/cellars/', (req,res) => { // delete a pairing
 app.use(function(req,res,next) {
   isAdmin(req,res,next)
 }) // => must be either owner of info, or carer
-app.post('/usersWithQrCode/', (req,res) => {
+app.post('/api/usersWithQrCode/', (req,res) => {
   user.create(req.body.users || "[]")
   .then(async (users)=>{
     let json = JSON.parse(JSON.stringify(users))
@@ -278,7 +278,7 @@ app.post('/usersWithQrCode/', (req,res) => {
     res.status(500).send("There was a problem adding the users , code : " + err)})
 })
 
-server.listen("3000"||process.env.PORT,()=>{
+server.listen(process.env.PORT || "3000",()=>{
     console.log('done.....')
 })
 
