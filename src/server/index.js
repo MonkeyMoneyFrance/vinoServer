@@ -20,7 +20,7 @@ const moment = require('moment')
 const cors = require("cors")
 const cron = require('node-cron');
 const app = express();
-
+const port = process.env.PORT || "3000";
 const http = require('http')
 const server = http.createServer(app);
 const io = require('socket.io')(server);
@@ -44,14 +44,7 @@ app.use(session({
   saveUninitialized: true
 }))
 
-if (process.env.NODE_ENV !== 'production') {
-  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
-} else {
-  app.use(express.static(path.resolve(__dirname,`../../dist`)))
-  app.get('/*',(req,res) => {
-    res.sendFile(path.resolve('index.html'))
-  })
-}
+
 
 passport.use(new GoogleStrategy({
     clientID: "492975335644-4okinlf94v3gfgjt4fjnbf8hlv5pt2uo.apps.googleusercontent.com",
@@ -279,9 +272,16 @@ app.post('/api/usersWithQrCode/', (req,res) => {
   .catch((err)=>{
     res.status(500).send("There was a problem adding the users , code : " + err)})
 })
-
-server.listen(process.env.PORT || "3000",()=>{
-    console.log('laucnhed on port ' , process.env.PORT)
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
+} else {
+  app.use(express.static(path.resolve(__dirname,`../../dist`)))
+  app.get('/*',(req,res) => {
+    res.sendFile(path.resolve('index.html'))
+  })
+}
+server.listen(port ,()=>{
+    console.log('laucnhed on port ' , port)
 })
 
 
