@@ -49,8 +49,7 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(cors({origin: 'http://localhost:8081', credentials: true }));
 } else {
   app.use(express.static(path.resolve(__dirname,`../../dist`)))
-  app.get(/^(?!\/foo\/)/,(req,res) => {
-    console.log('HERE WE SEND')
+  app.get(/^(?!\/api\/)/,(req,res) => {
     res.sendFile(path.resolve('index.html'))
   })
 }
