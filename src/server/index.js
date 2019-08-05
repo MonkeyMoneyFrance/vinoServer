@@ -279,7 +279,7 @@ app.post('/api/usersWithQrCode/', (req,res) => {
 })
 
 server.listen(process.env.PORT || "3000",()=>{
-    console.log('done.....')
+    console.log('laucnhed on port ' , process.env.PORT)
 })
 
 
