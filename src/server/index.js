@@ -45,6 +45,14 @@ app.use(session({
 }))
 
 
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
+} else {
+  app.use(express.static(path.resolve(__dirname,`../../dist`)))
+  app.get(/^(?!\/foo\/)/,(req,res) => {
+    res.sendFile(path.resolve('index.html'))
+  })
+}
 
 passport.use(new GoogleStrategy({
     clientID: "492975335644-4okinlf94v3gfgjt4fjnbf8hlv5pt2uo.apps.googleusercontent.com",
@@ -69,6 +77,8 @@ passport.deserializeUser((user, done) => {
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 
 app.get('/api/authConnected',(req,res) => {
   if (req.isAuthenticated()){
@@ -272,14 +282,7 @@ app.post('/api/usersWithQrCode/', (req,res) => {
   .catch((err)=>{
     res.status(500).send("There was a problem adding the users , code : " + err)})
 })
-if (process.env.NODE_ENV !== 'production') {
-  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
-} else {
-  app.use(express.static(path.resolve(__dirname,`../../dist`)))
-  app.get('/*',(req,res) => {
-    res.sendFile(path.resolve('index.html'))
-  })
-}
+
 server.listen(port ,()=>{
     console.log('laucnhed on port ' , port)
 })
