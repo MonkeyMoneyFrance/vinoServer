@@ -69,6 +69,7 @@ module.exports = {
   },
   hashPassword : function(password) {
     return new Promise((resolve,reject) => {
+      console.log(password,10)
       bcrypt.hash(password,10).then((hashedPassword) => {
          resolve(hashedPassword);
      }).catch(err=>reject(err))

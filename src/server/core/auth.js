@@ -2,11 +2,12 @@ const Auth = require('../models/auth.js')
 const passport = require('passport')
 const FacebookStrategy =require('passport-facebook').Strategy;
 const {signRequestToken} = require('../routes/middlewares')
+const {createResetPasswordToken} = require('../routes/redismethods.js')
+const {sendConfirmMail} = require('../routes/mailMethods.js');
+
 module.exports = {
   findAuth : (_id) => {
-    console.log('TRU TO FIND')
     return new Promise((resolve,reject) => {
-      console.log('will find', _id )
       Auth.findOne({_id}).then((user)=>{
         console.log(9,user)
         resolve(user)
@@ -16,6 +17,89 @@ module.exports = {
       })
     })
   },
+  resetPass : (authId,password) => {
+    return new Promise(function(resolve,reject){
+      Auth.updateOne({_id:authId},{
+        emailProvider: {
+          password: password
+        }
+      }).then(auth => {
+        resolve()
+      }).catch((err)=>{
+        console.log("User not found, error: "+err)
+        reject("User not found, error: "+err)
+        return;
+      })
+    })
+  },
+  findEmail : (email) => {
+    return new Promise((resolve,reject) => {
+      Auth.findOne({'$and' : [
+        {email},
+        {emailProvider : {$exists:true}}
+      ] }).then((user)=>{
+        if (user == null){
+          console.log("no user found for this email: "+email)
+          resolve() //no user with this email
+        }
+        else{
+          console.log(email+" -> "+user._id)
+          resolve(user._id)
+        }
+      }).catch(err => {
+        console.log("Error when retrieving userId for "+email,e);
+        reject(err)
+      })
+    })
+  },
+  localAuth : (email, password, done) => {
+      Auth.findOne({'$and' : [
+          {email: email},
+      ]}, {_id:1,emailProvider:1} , (err, auth)=>{
+        if (err) done(err)
+        if (!auth) {
+              Auth.create({
+                    email: email,
+                    emailProvider : {password,verify:false}
+              }).then(async (createdAuth)=>{
+                console.log('HERE')
+                try {
+                  let passwordToken = await createResetPasswordToken(createdAuth._id)
+                  await sendConfirmMail('vinologie.ovh',email,createdAuth._id,passwordToken)
+                  console.log('DID SEND MSG')
+                  done(null,null,"please verify")
+                } catch (err) {
+                  console.log(err)
+                  done(err)
+                }
+              }).catch((error)=>{
+                done(error)
+              })
+          } else if (!auth.emailProvider) {
+              Auth.updateOne({email},{
+                emailProvider: {
+                      verify:false,
+                      password
+                }
+              }).then(()=>{
+                done(null,null,"please verify")
+              }).catch((error)=>{
+                done(error)
+              })
+          } else if (!auth.emailProvider.verify == true) {
+            return done("not verified",null)
+          } else {
+            auth.comparePassword(password,(err,isMatch)=>{
+              if(isMatch){
+                return done(null,auth._id.toString())
+              } else {
+                return done('wrong password')
+              }
+            })
+          }
+      })
+
+    },
   googleAuth : (accessToken, refreshToken, profile, done) => {
       Auth.findOne({
             'email': profile.emails[0].value
@@ -30,7 +114,7 @@ module.exports = {
                           id: profile.id,
                           token: accessToken
                     }
-              },{new:true,upsert:true}).then((createdAuth)=>{
+              }).then((createdAuth)=>{
                 // const token = signRequestToken({userId:createdAuth._id.toString()})
                 done(null,createdAuth._id.toString())
                 // resolve({...profile,token,userId:createdAuth._id.toString(),accessToken})
@@ -74,7 +158,7 @@ module.exports = {
                             id: profile.id,
                             token: accessToken
                       }
-                  },{new:true,upsert:true}).then((createdAuth)=>{
+                  }).then((createdAuth)=>{
                     // const token = signRequestToken({userId:createdAuth._id.toString()})
                     done(null,createdAuth._id.toString())
                   }).catch((error)=>{
