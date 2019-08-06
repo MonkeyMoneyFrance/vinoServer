@@ -32,7 +32,6 @@ mongoose.connect('mongodb+srv://mymac:weiH8ahb@cluster0-4wcde.mongodb.net/test',
   console.log('connected')
 }).catch((e)=>console.log(e));
 
-
 app.use(bodyParser.urlencoded({limit: '2mb', extended: true}))
 app.use(bodyParser.json({limit: '2mb', extended: true}))
 app.use(session({
@@ -125,7 +124,7 @@ app.get('/api/askForConfirmation',function(req,res){
   let email = (req.query.email)
   auth.findEmail(req.query.email).then((id)=>{
     if (!id) return res.status(500).send('No user found')
-    auth.askForConfirmation(req,id,email).then(()=>{
+    auth.askForConfirmation(id,email).then(()=>{
       res.status(200).send({message:'Email Sent'})
     })
   }).catch((err)=>{
