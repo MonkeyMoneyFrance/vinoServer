@@ -47,15 +47,17 @@ app.use(session({
 
 
 if (process.env.NODE_ENV !== 'production') {
-  app.use(cors({origin: 'http://localhost:8081', credentials: true }));
+  app.use(cors({origin: 'http://localhost:8080', credentials: true }));
 } else {
   app.use(express.static(path.resolve(__dirname,`../../dist`)))
   app.get(/^(?!\/api\/)/,(req,res) => {
     res.sendFile(path.resolve('index.html'))
   })
 }
-passport.use(new LocalStrategy(
-  { usernameField: 'email' },
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passReqToCallback : true
+  },
   auth.localAuth
 ));
 passport.use(new GoogleStrategy({
@@ -95,36 +97,65 @@ app.get('/api/authConnected',(req,res) => {
 
 })
 
-app.get('/api/auth/facebook/token',
+app.post('/api/auth/facebook/token',
   passport.authenticate('facebook-token'),
   function (req, res) {
     if (req.user) res.status(200).send({userId : req.user});
     else res.status(401).send({'message':"Wrong Token"});
 });
 // , { scope: ["profile", "email"] })
-app.get('/api/auth/google/token',
+app.post('/api/auth/google/token',
   passport.authenticate("google-token"),
   function (req, res) {
     if (req.user) res.status(200).send({userId : req.user});
     else res.status(401).send({'message':"Wrong Token"});
 });
-app.get('/api/auth/email/token', (req, res, next) => {
-
-  passport.authenticate("local" , (err, user, info) => {
-
-    if(info) {return res.status(401).send(info)}
-    if (err) {return res.status(500).send(err)}
-    if (user) res.status(200).send({userId : user});
-
+app.post('/api/auth/email/token', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) { res.status(500).send(err) }
+    else if (!user) {res.status(401).send({'message':"Wrong Token"})}
+    else req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      res.status(200).send({userId : req.user});
+    });
   })(req, res, next);
 });
 
+app.get('/api/askForConfirmation',function(req,res){
+  let email = (req.query.email)
+  auth.findEmail(req.query.email).then((id)=>{
+    if (!id) return res.status(500).send('No user found')
+    auth.askForConfirmation(req,id,email).then(()=>{
+      res.status(200).send({message:'Email Sent'})
+    })
+  }).catch((err)=>{
+    console.log(err)
+    res.status(500).send(err)
+  })
+})
 
 
 // all which is below this points need to pass token validation !
 // app.use(function(req,res,next) {
 //   verifyToken(req,res,next)
 // }) // => must have a valid token !
+app.post('/api/confirmMail',function(req,res){
+  let {token,userId} = req.body
+  getResetPasswordToken(userId).then((retrievedToken)=>{
+    console.log()
+    if (!retrievedToken || retrievedToken !== token) {
+      return res.status(500).send('La requête a expiré. Veuillez recommencer la réinitialisation de mot de passe')
+    }
+    auth.confirmMail(userId).then(()=>{
+      res.status(200).send("Votre compte est bien confirmé, vous pouvez fermer cette fenêtre.")
+    }).catch((error)=>{
+      res.status(200).send(error)
+    })
+  }).catch((error)=>{
+    console.log(error)
+    res.status(200).send(error)
+  })
+})
 app.post('/api/askForReset',function(req,res){
   //body : email
   let email = req.body.email;

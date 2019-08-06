@@ -5,8 +5,8 @@ const {hashPassword,comparePassword} = require('../routes/middlewares.js')
 auth.pre('save', function (next) {
   if (!this.emailProvider) return next()
   hashPassword((this.emailProvider).password).then((hashedPassword) => {
-      (this.emailProvider).password = hashedPassword;
-      console.log(hashedPassword)
+      (this.emailProvider) = {...this.emailProvider,password : hashedPassword};
+
       next();
   }).catch(err => next(err))
 })

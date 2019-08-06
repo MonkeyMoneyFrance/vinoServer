@@ -12,17 +12,8 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 
 const URL = process.env.NODE_ENV == 'production' ? '' : "http://localhost:3000/"
-function mapStateToProps(state){
-  return {}
-}
-function matchDispatchToProps(dispatch){
-  return bindActionCreators({requestSetUser}, dispatch)
-}
-function App(props) {
-  useEffect(()=>{
-    props.requestSetUser()
-  },[])
 
+function App(props) {
   return (
     <div >
       <Switch>
@@ -42,4 +33,4 @@ function App(props) {
   );
 }
 
-export default withRouter(connect(mapStateToProps,matchDispatchToProps)(App));
+export default withRouter(App);

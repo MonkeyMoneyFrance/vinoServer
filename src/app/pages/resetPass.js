@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles , createMuiTheme , responsiveFontSizes} from '@material-ui/core/styles';
 import {connect} from 'react-redux'
-const URL = (process.env.NODE_ENV == 'production') ? '' : "http://localhost:3000/"
+const URL = (process.env.NODE_ENV == 'production') ? '' : "http://localhost:3000"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -66,17 +66,23 @@ function ResetPass (props) {
     	{
     		let[ key, value ] = each.split( '=' );
     		result[ key ] = value;
-    		( result );
+    		return ( result );
     	}, {});
 
       const options = {
         credentials: 'include',
         method: 'POST',
-        body: JSON.stringify({...credentials,token:params.token}),
+        body: JSON.stringify({...params,password1:credentials.password}),
         headers: new Headers({
           'Content-Type': 'application/json'
         })
       }
+      console.log(options)
+      fetch(URL + '/api/newPassword', options).then(async (res)=>{
+          let text = await res.text()
+            alert(text)
+            setLoad(false)
+      })
       // fetch(URL + 'resetPass', options)
     }
     const onChange = (e) => {
