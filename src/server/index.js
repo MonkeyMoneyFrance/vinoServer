@@ -124,7 +124,7 @@ app.get('/api/askForConfirmation',function(req,res){
   let email = (req.query.email)
   auth.findEmail(req.query.email).then((id)=>{
     if (!id) return res.status(500).send('No user found')
-    auth.askForConfirmation(id,email).then(()=>{
+    auth.askForConfirmation(req,id,email).then(()=>{
       res.status(200).send({message:'Email Sent'})
     })
   }).catch((err)=>{
