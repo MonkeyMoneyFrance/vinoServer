@@ -66,11 +66,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function mapStateToProps(state){
-  return {
-    user : state.user
-  }
-}
+
 function PublicHeader(props) {
     const classes = useStyles();
         return (
@@ -80,9 +76,7 @@ function PublicHeader(props) {
                 <LinkRouter to='/'>Vinologie</LinkRouter>
               </Typography>
               <nav>
-              {props.user.user && (
-                <LinkRouter to='/games' className={classes.link}>My Space</LinkRouter>
-              )}
+
                 {/*
                 <Link variant="button" color="textPrimary"  className={classes.link}>
                   <LinkRouter to='/' >Home</LinkRouter>
@@ -107,4 +101,4 @@ function PublicHeader(props) {
         )
 }
 
-export default connect(mapStateToProps)(PublicHeader);
+export default PublicHeader;
