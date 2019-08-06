@@ -27,7 +27,7 @@ const http = require('http')
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 streams.setIo(io)
-
+console.log(req.hostname)
 mongoose.connect('mongodb+srv://mymac:weiH8ahb@cluster0-4wcde.mongodb.net/test', {useNewUrlParser: true,useFindAndModify:false}).then(()=>{
   console.log('connected')
 }).catch((e)=>console.log(e));
