@@ -110,7 +110,6 @@ app.post('/api/auth/google/token',
     else res.status(401).send({'message':"Wrong Token"});
 });
 app.post('/api/auth/email/token', (req, res, next) => {
-  console.log(req.hostname)
   passport.authenticate('local', (err, user, info) => {
     if (err) { res.status(500).send(err) }
     else if (!user) {res.status(401).send({'message':"Wrong Token"})}
