@@ -20,12 +20,12 @@ var self = {
       })
     })
   },
-  askForConfirmation : (id,email) => {
+  askForConfirmation : (req,id,email) => {
     return new Promise(async (resolve,reject) => {
       console.log(req.hostname,email,id)
       try {
         let passwordToken = await createResetPasswordToken(id)
-        await sendConfirmMail(process.env.HOST_NAME,email,id,passwordToken)
+        await sendConfirmMail(req.hostname,email,id,passwordToken)
         console.log('DID SEND MSG')
         resolve()
       } catch (err) {
@@ -92,7 +92,7 @@ var self = {
                   email: email,
                   emailProvider : {password,verify:false}
               }).then(createdAuth=>{
-                  self.askForConfirmation(createdAuth._id,email)
+                  self.askForConfirmation(req,createdAuth._id,email)
                   .then(()=>done("please verify",null,"please verify"))
                   .catch((err) => done(err))
 
@@ -103,7 +103,7 @@ var self = {
             auth.emailProvider =  {verify:false,password}
             auth.save(async (err) => {
               if(err) done(error)
-              self.askForConfirmation(auth._id,email)
+              self.askForConfirmation(req,auth._id,email)
               .then(()=>done("please verify",null,"please verify"))
               .catch((err) => done(err))
             })

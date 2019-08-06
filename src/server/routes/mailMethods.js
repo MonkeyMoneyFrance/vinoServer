@@ -23,7 +23,7 @@ const  mailTransport = nodemailer.createTransport({
   sendConfirmMail : function(hostname,email,userId,token){
     return new Promise(async function(resolve,reject) {
       // process.env.mode == test <=> VPS distrimedic.site
-      let address = process.env.mode=="test" ? "https://"+hostname : "http://localhost:3000";
+      let address = process.env.NODE_ENV == 'production' ? "https://"+hostname : "http://localhost:3000";
       let link = address+"/confirmMail?userId="+userId+"&token="+token;
       let options = {
         from : "Vinologie <noreply@vinologie.fr>",
