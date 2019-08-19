@@ -6,7 +6,7 @@ const FacebookTokenStrategy = require('passport-facebook-token');
 const GoogleStrategy = require('passport-google-token').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 
-const { facebook, google } = require('./configAuth');
+
 const streams = require('./streams')
 const session = require('express-session');
 const redisStore = require('connect-redis')(session);
