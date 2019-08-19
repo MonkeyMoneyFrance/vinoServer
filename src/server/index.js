@@ -1,12 +1,13 @@
 const express=require('express');
 const {user,auth,cellar,wine}=require('./core');
+const dotenv = require('dotenv');
 const bodyParser = require('body-parser')
 const passport = require('passport')
 const FacebookTokenStrategy = require('passport-facebook-token');
 const GoogleStrategy = require('passport-google-token').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 
-
+dotenv.config();
 const streams = require('./streams')
 const session = require('express-session');
 const redisStore = require('connect-redis')(session);
@@ -22,15 +23,27 @@ const moment = require('moment')
 const cors = require("cors")
 const cron = require('node-cron');
 const app = express();
-const port = process.env.PORT || "3000";
+const port = process.env.PORT || '3000'
+const secretKey =  process.env.SECRETKEY || 'abcdefghijklmnopqrstuvwxyz'
+const dbUser =  process.env.DBUSER || null
+const dbPass = process.env.DBPASS || null
+const connnectString =  "mongodb+srv://"+dbUser+":"+dbPass+"@cluster0-4wcde.mongodb.net/test"
 const http = require('http')
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 streams.setIo(io)
+mongoose.connect(connnectString,
+{
+  useFindAndModify:false,
+  useNewUrlParser: true,
+  autoIndex:false,
+  replicaSet:"Cluster0-shard-0",
+  ssl: true,
+  sslValidate: true,
+})
+.then(()=>{console.log('connected')})
+.catch((e)=>console.log(e));
 
-mongoose.connect('mongodb+srv://mymac:weiH8ahb@cluster0-4wcde.mongodb.net/test', {useNewUrlParser: true,useFindAndModify:false}).then(()=>{
-  console.log('connected')
-}).catch((e)=>console.log(e));
 
 app.use(bodyParser.urlencoded({limit: '2mb', extended: true}))
 app.use(bodyParser.json({limit: '2mb', extended: true}))
