@@ -12,7 +12,7 @@ const session = require('express-session');
 const redisStore = require('connect-redis')(session);
 const uuid = require('uuid/v4')
 const {getClient,getResetPasswordToken,createResetPasswordToken,fetchQrCode,setQrCode,setDeviceToken,getDeviceToken,setSocketClient,removeSocketClient} = require('./routes/redismethods.js')
-const {verifyToken,signRequestToken,isAllowed,setMiddleWareClient,isAdmin} = require('./routes/middlewares.js');
+const {isAllowed,setMiddleWareClient,isAdmin} = require('./routes/middlewares.js');
 const {sendResetPasswordMail} = require('./routes/mailMethods.js');
 const {verifySocketToken} = require('./routes/socketmiddlewares.js');
 const mongoose = require('mongoose')
@@ -88,8 +88,7 @@ app.use(passport.session());
 
 app.get('/api/authConnected',(req,res) => {
   if (req.isAuthenticated()){
-    const token = signRequestToken({userId:req.user})
-    res.status(200).send({token})
+    res.status(200).send({userId:req.user})
   } else {
     res.status(403).send({message:'UNAUTHENTICATED'})
   }
