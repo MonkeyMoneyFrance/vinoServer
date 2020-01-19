@@ -60,12 +60,15 @@ app.use(session({
   saveUninitialized: true
 }))
 
-
+console.log(process.env.NODE_ENV)
 if (process.env.NODE_ENV !== 'production') {
   app.use(cors({origin: 'http://localhost:8080', credentials: true }));
 } else {
   app.use(express.static(path.resolve(__dirname,`../../dist`)))
   app.get(/^(?!\/api\/)/,(req,res) => {
+    console.log("try to resolve")
+
+    
     res.sendFile(path.resolve('index.html'))
   })
 }

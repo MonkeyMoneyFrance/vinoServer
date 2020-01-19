@@ -6,7 +6,6 @@ const FacebookStrategy =require('passport-facebook').Strategy;
 const {signRequestToken} = require('../routes/middlewares')
 const {createResetPasswordToken} = require('../routes/redismethods.js')
 const {sendConfirmMail} = require('../routes/mailMethods.js');
-var _this = this;
 
 var self = {
   findAuth : (_id) => {
@@ -126,6 +125,7 @@ var self = {
 
     },
   googleAuth : (accessToken, refreshToken, profile, done) => {
+    console.log(accessToken, refreshToken, profile)
       Auth.findOne({
             'email': profile.emails[0].value
       }, function(err, auth) {
