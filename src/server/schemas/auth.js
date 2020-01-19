@@ -5,12 +5,11 @@ Schema = mongoose.Schema;
 module.exports = new Schema({
         name: String,
         email: {
-            type: String,
-            // required: true,
-            trim: true,
-            unique: true,
+            type: String, required: true,
+            trim: true, unique: true,
             match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
         },
+        // userId : ObjectId,
         facebookProvider: {
               type: {
                     id: String,
@@ -20,15 +19,8 @@ module.exports = new Schema({
         },
         googleProvider: {
               type: {
-                id: String,
-                token: String
-              },
-              select: false
-        },
-        emailProvider: {
-              type: {
-                password: String,
-                verify:Boolean
+                    id: String,
+                    token: String
               },
               select: false
         }

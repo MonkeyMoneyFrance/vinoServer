@@ -1,31 +1,31 @@
-// const key = require('../key.js');
+const key = require('../key.js');
 const bcrypt = require('bcrypt');
-// const jwt=require('jsonwebtoken');
+const jwt=require('jsonwebtoken');
 const Cellar = require('../models/cellar.js')
 var client;
 module.exports = {
-  // verifyToken : function(req,res,next){
-  //   let token;
-  //   try {
-  //     let passport = req.session.passport || {}
-  //     token = passport.user
-  //     jwt.verify(token, key.tokenKey, function (err, decoded) {
-  //         if (err) {
-  //           console.log(err)
-  //           return res.status(403).json({"status":403, "message": 'Unauthorized access.' })
-  //         }
-  //             console.log(decoded)
-  //             req.decoded = decoded;
-  //             next();
-  //     })
-  //   } catch(e){
-  //     console.log(e)
-  //     return res.status(403).send({
-  //         "error": true,
-  //         "message": 'No token provided.'
-  //     });
-  //   }
-  // },
+  verifyToken : function(req,res,next){
+    let token;
+    try {
+      let passport = req.session.passport || {}
+      token = passport.user
+      jwt.verify(token, key.tokenKey, function (err, decoded) {
+          if (err) {
+            console.log(err)
+            return res.status(403).json({"status":403, "message": 'Unauthorized access.' })
+          }
+              console.log(decoded)
+              req.decoded = decoded;
+              next();
+      })
+    } catch(e){
+      console.log(e)
+      return res.status(403).send({
+          "error": true,
+          "message": 'No token provided.'
+      });
+    }
+  },
   isAllowed: function(req,res,next){
     if (!req.user){
       console.log('NO TOKEN PROVIDED')
@@ -69,13 +69,12 @@ module.exports = {
   },
   hashPassword : function(password) {
     return new Promise((resolve,reject) => {
-      console.log(password,10)
       bcrypt.hash(password,10).then((hashedPassword) => {
          resolve(hashedPassword);
      }).catch(err=>reject(err))
     })
   },
-  // signRequestToken : function(data) {
-  //   return jwt.sign(data,key.tokenKey , { expiresIn: key.tokenLife});
-  // }
+  signRequestToken : function(data) {
+    return jwt.sign(data,key.tokenKey , { expiresIn: key.tokenLife});
+  }
 }

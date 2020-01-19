@@ -6,29 +6,6 @@ client.on('error', (err) => {
     console.log("Error " + err)
 });
 module.exports = {
-  createResetPasswordToken : function(userId){
-    let token = Math.random().toString(36).substr(2);
-    return new Promise((resolve,reject) =>{
-      client.set('resetPasswordTokenForUserId:'+userId,token,'EX', 1800 ,(err,reply)=>{
-        if (err){
-          console.log("error when assigning resetPasswordToken in Redis",{userId})
-          reject(err)
-        }
-        else resolve(token)
-      })
-    })
-  },
-  getResetPasswordToken : function(userId){
-    return new Promise((resolve,reject) =>{
-      client.get('resetPasswordTokenForUserId:'+userId,(err,token)=>{
-        if (err){
-          console.log("error when fetching resetPasswordToken in Redis",{userId})
-          reject(err)
-        }
-        else resolve(token)
-      })
-    })
-  },
   fetchQrCode : function(id){
     return new Promise((resolve,reject) =>{
       client.get('qrCode:'+id,(err,reply)=>{
